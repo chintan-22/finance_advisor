@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.env
+.DS_Store
+
+# Chroma persistence
+docs/chroma/
+docs/chroma_rag/

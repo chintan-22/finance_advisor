@@ -1,0 +1,11 @@
+pandas
+requests
+certifi
+newsapi-python
+langchain
+langchain-community
+transformers
+sentence-transformers
+chromadb
+huggingface-hub
+python-dotenv
