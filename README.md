@@ -1,73 +1,473 @@
-LLM + RAG for Finance
+# 🤖 LLM + RAG for Finance - AI Investment Advisor
 
-Summary
+## 📊 Project Overview
 
-This repository converts the notebook "LLM + RAG for Finance" into a small Python project you can run and publish to GitHub. The project demonstrates fetching market and company data, pre-processing it, creating embeddings, storing them in a Chroma vectorstore, and building a Retrieval-Augmented Generation (RAG) QA pipeline using a Hugging Face model.
+**AI-Powered Investment Recommendation System** that uses Large Language Models (LLM) and Retrieval-Augmented Generation (RAG) to provide intelligent stock investment analysis and recommendations.
 
-Features
-- Fetch stock/company quotes from Financial Modeling Prep (FMP) API
-- Fetch news using NewsAPI
-- Preprocess economic and news data
-- Create embeddings with Hugging Face sentence transformers and LangChain
-- Store vectors using Chroma (persisted directory)
-- Build a RetrievalQA chain using a Hugging Face model
+This project combines:
+- 📰 **Real-time financial data** from multiple APIs
+- 🧠 **AI language models** for intelligent analysis
+- 🎯 **Vector embeddings** for semantic search
+- 💬 **Natural language interface** for easy interaction
+- 📈 **Investment recommendations** with detailed insights
 
-Tech stack
-- Python (3.8+)
-- pandas
-- requests
-- certifi
-- newsapi-python
-- langchain
-- langchain-community
-- transformers
-- sentence-transformers
-- chromadb
-- huggingface_hub
-- python-dotenv
+### ✨ What It Does
 
-Repository layout
+The system analyzes stocks and provides:
+1. **Detailed Investment Analysis** - For any specific stock you ask about
+2. **Stock Recommendations** - Top stocks ranked by investment quality
+3. **Sentiment Analysis** - Market sentiment from recent news
+4. **Risk Assessment** - Risk levels based on financial metrics
+5. **Financial Metrics** - P/E ratios, market cap, dividends, etc.
+6. **Investment Recommendations** - 5-level recommendation system
 
-- README.md            - This file
-- requirements.txt     - Python dependencies
-- .gitignore
-- src/                 - Python package
-  - config.py          - Environment and config helpers
-  - data_fetch.py      - FinancialModelingPrep API helpers
-  - news_fetch.py      - NewsAPI helpers
-  - preprocess.py      - Preprocessing utilities
-  - embeddings.py      - Build embeddings and Chroma vectorstore
-  - rag.py             - Build and query a RetrievalQA chain
-- scripts/
-  - run_demo.py        - Minimal demo script showing the end-to-end flow
+### 🎯 Key Features
 
-Setup
+- ✅ Analyze ANY stock with natural language questions
+- ✅ Get recommendations for best stocks to invest
+- ✅ Real-time news sentiment analysis
+- ✅ Risk assessment and financial metrics
+- ✅ Conversational AI interface
+- ✅ Conversation history tracking
+- ✅ Multiple query formats support
+- ✅ Graceful fallbacks for API limitations
 
-1) Create and activate a virtual environment (zsh):
+## 🏗️ System Architecture & Workflow
 
-   python -m venv .venv
-   source .venv/bin/activate
+### Complete Data Flow
 
-2) Install dependencies:
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│                    USER NATURAL LANGUAGE QUERY                         │
+│          "Should I invest $5000 in Tesla?"                             │
+│          "Suggest best stocks to invest $5000"                         │
+│                                                                         │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+                    ┌────────────────────┐
+                    │  QUERY PARSER      │
+                    │  Extract ticker &  │
+                    │  investment amount │
+                    └────────┬───────────┘
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+                ▼                         ▼
+        ┌──────────────┐         ┌──────────────────┐
+        │ SPECIFIC     │         │ RECOMMENDATIONS  │
+        │ STOCK        │         │ ENGINE           │
+        │ ANALYSIS     │         │ (15 stocks)      │
+        └────────┬─────┘         └────────┬─────────┘
+                 │                        │
+                 └────────────┬───────────┘
+                              │
+                 ┌────────────┴────────────┐
+                 │                         │
+                 ▼                         ▼
+        ┌─────────────────┐      ┌──────────────────┐
+        │ DATA FETCHING   │      │ DATA FETCHING    │
+        │ • FMP API       │      │ • FMP API (15x)  │
+        │ • NewsAPI       │      │ • NewsAPI (15x)  │
+        │ • Stock Data    │      │ • News Data      │
+        │ • News Articles │      │ • All stocks     │
+        └────────┬────────┘      └────────┬─────────┘
+                 │                        │
+                 ▼                        ▼
+        ┌─────────────────┐      ┌──────────────────┐
+        │ PREPROCESSING   │      │ PREPROCESSING    │
+        │ • Clean data    │      │ • Clean data     │
+        │ • Normalize     │      │ • Normalize      │
+        │ • Combine       │      │ • Combine        │
+        └────────┬────────┘      └────────┬─────────┘
+                 │                        │
+                 ▼                        ▼
+        ┌─────────────────┐      ┌──────────────────┐
+        │ EMBEDDINGS      │      │ EMBEDDINGS       │
+        │ • HuggingFace   │      │ • HuggingFace    │
+        │ • Create vectors│      │ • Create vectors │
+        │ • Chroma DB     │      │ • Chroma DB      │
+        └────────┬────────┘      └────────┬─────────┘
+                 │                        │
+                 ▼                        ▼
+        ┌─────────────────┐      ┌──────────────────┐
+        │ RAG ANALYSIS    │      │ INVESTMENT SCORE │
+        │ • Query chain   │      │ • Score calc     │
+        │ • Sentiment     │      │ • Rank stocks    │
+        │ • Risk assess   │      │ • Top 5          │
+        └────────┬────────┘      └────────┬─────────┘
+                 │                        │
+                 └────────────┬───────────┘
+                              │
+                              ▼
+                  ┌──────────────────────┐
+                  │  RECOMMENDATION      │
+                  │  GENERATION          │
+                  │  • Financial metrics │
+                  │  • Risk level        │
+                  │  • Sentiment         │
+                  │  • Shares calc       │
+                  └────────┬─────────────┘
+                           │
+                           ▼
+                  ┌──────────────────────┐
+                  │  USER OUTPUT         │
+                  │  📊 Recommendation   │
+                  │  📈 Analysis         │
+                  │  ⚠️ Disclaimer      │
+                  └──────────────────────┘
 
-   pip install -r requirements.txt
+```
 
-3) Create a `.env` file in the project root with the following keys:
+## 🔄 Project Workflow
 
-   FMP_API_KEY=your_financialmodelingprep_api_key
-   NEWSAPI_API_KEY=your_newsapi_api_key
-   HUGGINGFACEHUB_API_TOKEN=your_hf_token
+### Mode 1: Interactive Chatbot (Recommended)
 
-4) Run the demo:
+```bash
+python scripts/chatbot.py
+```
 
-   python scripts/run_demo.py
+**Workflow:**
+1. User asks investment question in natural language
+2. Chatbot parses query and extracts ticker/amount
+3. System fetches latest data from APIs
+4. Data is preprocessed and cleaned
+5. Embeddings created and stored in Chroma DB
+6. RAG chain analyzes the data
+7. AI generates investment recommendation
+8. Results displayed to user with analysis
 
-Notes
+### Mode 2: Demo Pipeline
 
-- Many of the functions return pandas DataFrames or LangChain objects. The demo script shows a short flow but you will likely adapt modules to your dataset and environment.
-- For better results you may use a paid/large LLM from Hugging Face or OpenAI. The code is modular so you can swap LLMs.
+```bash
+python scripts/run_demo.py
+```
 
-License
+**Workflow:**
+1. Demonstrates complete 5-step pipeline
+2. Fetches Apple (AAPL) data
+3. Preprocesses and creates embeddings
+4. Builds RAG chain
+5. Shows example queries
+6. Provides interactive mode for custom queries
 
-Add a license file if you plan to publish on GitHub.
-# finance_advisor
+## 📋 Features & Capabilities
+
+### Analysis Features
+- ✅ Real-time stock price data
+- ✅ Financial metrics (P/E, EPS, market cap, dividend yield)
+- ✅ 50-day and 200-day price averages
+- ✅ News sentiment analysis (15+ articles)
+- ✅ Risk assessment (LOW/MEDIUM/HIGH)
+- ✅ Share quantity calculation
+- ✅ Investment recommendation (5-level system)
+
+### Query Types Supported
+
+**Specific Stock Analysis:**
+```
+"Should I invest $5000 in Tesla?"
+"Is Microsoft a good investment with $10000?"
+"Can I invest $20000 in Apple?"
+"What about putting $15000 into Google?"
+"Analyze Amazon with my $8000"
+```
+
+**Stock Recommendations:**
+```
+"Suggest best stocks to invest $5000"
+"Which stocks should I buy with $10000?"
+"What are the top investments for $5000?"
+"Recommend the best stocks"
+"I have $8000, which stocks are best?"
+```
+
+### Analyzed Stocks (15 Total)
+- **Tech Giants:** AAPL, MSFT, GOOGL, AMZN, META, NFLX
+- **High Growth:** TSLA, NVDA
+- **Financial:** JPM, V
+- **Healthcare:** JNJ, UNH
+- **Consumer:** PG, HD, DIS
+
+## 🛠️ Tech Stack
+
+### Core Technologies
+- **Python 3.9+** - Programming language
+- **LangChain 0.3.28** - LLM orchestration & RAG framework
+- **Hugging Face** - Embeddings & language models
+  - `sentence-transformers` - For vector embeddings (all-MiniLM-L6-v2)
+  - `transformers` - For LLM loading
+  - `huggingface-hub` - Model management
+
+### Data & ML
+- **pandas** - Data manipulation & analysis
+- **numpy** - Numerical computing
+- **scikit-learn** - ML utilities & risk calculations
+- **scipy** - Scientific computing
+
+### Vector Database & Search
+- **Chroma 1.5.5** - Vector database for embeddings
+- **Persistent storage** - Saves embeddings for reuse
+
+### External APIs
+- **NewsAPI** - Real news data (newsapi-python 0.2.7)
+- **Financial Modeling Prep (FMP)** - Stock financial data
+- **requests 2.32.5** - HTTP requests
+
+### Utilities
+- **python-dotenv** - Environment variable management
+- **PyTorch 2.8.0** - Deep learning backend
+
+## 📁 Repository Layout
+
+```
+llm_rag_finance/
+├── README.md                           # Project documentation
+├── STOCK_RECOMMENDATION_GUIDE.md       # Stock recommendation feature guide
+├── CHATBOT_GUIDE.md                    # Chatbot usage guide
+├── PROJECT_SUMMARY.md                  # Architecture overview
+├── COMPLETION_SUMMARY.py               # Project completion info
+│
+├── .env                                # API keys (keep secret!)
+├── .gitignore                          # Git ignore rules
+├── requirements.txt                    # Python dependencies
+│
+├── src/                                # Main Python package
+│   ├── __init__.py
+│   ├── config.py                       # Environment configuration
+│   ├── data_fetch.py                   # FMP API helpers
+│   ├── news_fetch.py                   # NewsAPI helpers
+│   ├── preprocess.py                   # Data cleaning & normalization
+│   ├── embeddings.py                   # Vector embeddings & Chroma DB
+│   ├── rag.py                          # RAG pipeline with LLM
+│   ├── financial_advisor.py            # Investment analysis engine
+│   └── stock_recommender.py            # Stock recommendation engine
+│
+├── scripts/                            # Executable scripts
+│   ├── run_demo.py                     # Complete demo pipeline
+│   ├── chatbot.py                      # Interactive chatbot
+│   └── recommend_demo.py               # Stock recommendation demo
+│
+├── start_chatbot.sh                    # Convenient launcher script
+│
+└── docs/chroma_rag/                    # Persistent vector database
+```
+
+## 🚀 Quick Start Guide
+
+### Step 1: Setup Environment
+
+```bash
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install all dependencies
+pip install -r requirements.txt
+```
+
+### Step 2: Configure API Keys
+
+Create `.env` file in project root:
+
+```env
+FMP_API_KEY=your_key_here
+NEWSAPI_API_KEY=your_key_here
+HUGGINGFACEHUB_API_TOKEN=your_token_here
+CHROMA_PERSIST_DIR=docs/chroma/
+CHROMA_PERSIST_DIR_RAG=docs/chroma_rag/
+```
+
+### Step 3: Run the Chatbot
+
+```bash
+python scripts/chatbot.py
+```
+
+**Example Questions:**
+```
+You: Should I invest $5000 in Tesla?
+You: Suggest best stocks to invest $10000
+You: Is Microsoft a good investment?
+You: What's your recommendation for $8000?
+```
+
+## 📊 Example Workflow
+
+### Complete Flow for a User Query
+
+```
+User Input: "Should I invest $5000 in Apple?"
+    │
+    ├─→ Query Parser: Extracts AAPL, $5000
+    │
+    ├─→ Data Fetching:
+    │   ├─ FMP API: Stock price, P/E, market cap, dividends
+    │   └─ NewsAPI: 15+ recent articles about Apple
+    │
+    ├─→ Data Preprocessing:
+    │   ├─ Clean and normalize data
+    │   ├─ Combine financial + news data
+    │   └─ Handle missing values
+    │
+    ├─→ Embeddings Creation:
+    │   ├─ Convert text to vectors (HuggingFace)
+    │   ├─ Store in Chroma DB
+    │   └─ Create semantic index
+    │
+    ├─→ RAG Analysis:
+    │   ├─ Retrieve relevant documents
+    │   ├─ Query LLM for analysis
+    │   └─ Generate insights
+    │
+    ├─→ Investment Scoring:
+    │   ├─ Calculate risk level
+    │   ├─ Analyze sentiment
+    │   ├─ Assess valuation
+    │   └─ Generate recommendation
+    │
+    └─→ Output to User:
+        ├─ 📈 Recommendation: STRONG BUY
+        ├─ 💰 Financial Metrics
+        ├─ 📰 Sentiment Analysis
+        ├─ ⚠️ Risk Assessment
+        └─ 📋 Important Disclaimers
+```
+
+## 🎯 Recommendation Scoring System
+
+### Investment Score Calculation
+
+| Factor | Max Points | Description |
+|--------|-----------|-------------|
+| **Recommendation** | 50 | STRONG BUY (50), BUY (35), HOLD (15), SELL (0) |
+| **Risk Level** | 30 | LOW (30), MEDIUM (15), HIGH (0) |
+| **Sentiment** | 20 | POSITIVE (20), NEUTRAL (10), NEGATIVE (0) |
+| **Valuation** | 10 | P/E < 20 (10 bonus points) |
+| **TOTAL** | **100** | Final investment score |
+
+### Recommendation Levels
+
+- 🟢 **STRONG BUY** - Excellent opportunity (Score: 85+)
+- 🟢 **BUY** - Good opportunity (Score: 70-84)
+- 🟡 **HOLD** - Neutral, wait (Score: 50-69)
+- 🔴 **SELL** - Consider alternatives (Score: 30-49)
+- 🔴 **STRONG SELL** - Avoid (Score: < 30)
+
+## 📚 Documentation
+
+For detailed information, see:
+- **[CHATBOT_GUIDE.md](CHATBOT_GUIDE.md)** - Interactive chatbot usage
+- **[STOCK_RECOMMENDATION_GUIDE.md](STOCK_RECOMMENDATION_GUIDE.md)** - Recommendation engine
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Architecture details
+- **[COMPLETION_SUMMARY.py](COMPLETION_SUMMARY.py)** - Project info script
+
+## ⚙️ How Each Component Works
+
+### 1. **data_fetch.py** - Financial Data Retrieval
+- Fetches stock quotes from Financial Modeling Prep API
+- Retrieves: Price, P/E ratio, EPS, market cap, dividends, etc.
+- Handles API errors with sample data fallback
+
+### 2. **news_fetch.py** - News & Sentiment Data
+- Fetches latest news articles from NewsAPI
+- Filters by stock ticker and date range
+- Collects 15+ articles for sentiment analysis
+
+### 3. **preprocess.py** - Data Cleaning & Preparation
+- Removes duplicates and missing values
+- Normalizes text and numerical values
+- Combines financial and news data
+- Handles special data types (dicts, lists)
+
+### 4. **embeddings.py** - Vector Embeddings
+- Creates semantic embeddings using HuggingFace models
+- Stores embeddings in Chroma vector database
+- Enables semantic similarity search
+- Persists vectors for reuse
+
+### 5. **rag.py** - Retrieval Augmented Generation
+- Builds RAG chain with LLM
+- Retrieves relevant documents
+- Generates contextual responses
+- Falls back to MockLLM if needed
+
+### 6. **financial_advisor.py** - Investment Analysis Engine
+- Orchestrates full analysis pipeline
+- Calculates risk levels from metrics
+- Analyzes news sentiment
+- Generates recommendations
+
+### 7. **stock_recommender.py** - Stock Ranking System
+- Analyzes 15 popular stocks
+- Scores each stock (0-100)
+- Ranks by investment quality
+- Returns top 5 recommendations
+
+## 🔐 Security & API Keys
+
+- ✅ Use `.env` file for sensitive data
+- ✅ Never commit `.env` to git
+- ✅ Add `.env` to `.gitignore`
+- ✅ Rotate keys regularly
+- ✅ Use free tier APIs for testing
+
+## 🎓 Learning Outcomes
+
+This project teaches:
+- ✅ Building RAG pipelines with LangChain
+- ✅ Working with LLMs and embeddings
+- ✅ Vector database operations (Chroma)
+- ✅ API integration and data fetching
+- ✅ NLP and sentiment analysis
+- ✅ Building conversational AI systems
+- ✅ Production-ready error handling
+
+## ⚠️ Important Disclaimers
+
+- 🔴 **NOT financial advice** - AI analysis only
+- 🔴 **Consult professionals** - Before investing
+- 🔴 **Risk awareness** - Always understand risks
+- 🔴 **Diversify portfolio** - Don't put all in one stock
+- 🔴 **Past ≠ Future** - Historical data doesn't guarantee results
+- 🔴 **Monitor regularly** - Check investments frequently
+
+## 🐛 Troubleshooting
+
+### Issue: "HTTP 403 Forbidden" from FMP API
+**Solution:** FMP free tier has limitations. System falls back to sample data automatically.
+
+### Issue: Model loading takes too long
+**Solution:** First run loads the model. Subsequent runs use cache. Be patient on first run.
+
+### Issue: No environment variables found
+**Solution:** Make sure `.env` file exists in project root with required keys.
+
+### Issue: Chroma DB not found
+**Solution:** First run creates the database. It will be at `docs/chroma_rag/`
+
+## 🚀 Future Enhancements
+
+- [ ] Real-time price alerts
+- [ ] Portfolio optimization
+- [ ] Technical analysis indicators
+- [ ] Web UI interface
+- [ ] Database for conversation history
+- [ ] Multiple portfolio tracking
+- [ ] Risk-adjusted recommendations
+- [ ] Machine learning model improvements
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit issues or pull requests.
+
+---
+
+**Made with ❤️ for AI-powered investment analysis**
+
+For questions or support, open an issue on GitHub.
