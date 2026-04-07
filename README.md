@@ -122,7 +122,29 @@ The system analyzes stocks and provides:
 
 ## 🔄 Project Workflow
 
-### Mode 1: Interactive Chatbot (Recommended)
+### Mode 1: Streamlit Web Interface (Recommended) ⭐ NEW
+
+```bash
+./run_chatbot.sh
+# Opens browser at http://localhost:8501
+```
+
+**Features:**
+- 💻 Beautiful modern web interface with gradient design
+- 💬 Real-time conversational chat with message history
+- 🎯 Smart conversation flow: Budget → Risk Tolerance → Recommendations
+- 📊 Live user profile card showing budget & risk level
+- 🚀 Instant stock recommendations upon providing budget + risk
+- 📱 Mobile-friendly responsive design
+
+**Workflow:**
+1. User enters investment amount (e.g., "$5000")
+2. Chatbot asks for risk tolerance (Conservative/Moderate/Aggressive)
+3. System generates **risk-aware recommendations** instantly
+4. Top 5 stocks displayed with detailed analysis
+5. Different recommendations for different risk profiles
+
+### Mode 2: Interactive CLI Chatbot
 
 ```bash
 python scripts/chatbot.py
@@ -138,7 +160,7 @@ python scripts/chatbot.py
 7. AI generates investment recommendation
 8. Results displayed to user with analysis
 
-### Mode 2: Demo Pipeline
+### Mode 3: Demo Pipeline
 
 ```bash
 python scripts/run_demo.py
@@ -155,13 +177,32 @@ python scripts/run_demo.py
 ## 📋 Features & Capabilities
 
 ### Analysis Features
-- ✅ Real-time stock price data
-- ✅ Financial metrics (P/E, EPS, market cap, dividend yield)
-- ✅ 50-day and 200-day price averages
-- ✅ News sentiment analysis (15+ articles)
-- ✅ Risk assessment (LOW/MEDIUM/HIGH)
-- ✅ Share quantity calculation
-- ✅ Investment recommendation (5-level system)
+- ✅ **Real-time stock prices** via yfinance API
+- ✅ **Financial metrics** (P/E, EPS, market cap, dividend yield)
+- ✅ **50-day and 200-day price averages**
+- ✅ **News sentiment analysis** (15+ articles)
+- ✅ **Risk assessment** (LOW/MEDIUM/HIGH)
+- ✅ **Share quantity calculation**
+- ✅ **Investment recommendation** (5-level system)
+- ✅ **Risk-aware stock ranking** - Different stocks for different risk tolerances
+- ✅ **Beautiful Streamlit web interface** with gradient design
+- ✅ **Conversational AI** that understands natural language
+
+### Risk-Aware Recommendations ⭐ NEW
+
+The recommendation engine now adapts stock suggestions based on user risk tolerance:
+
+| Risk Level | Characteristics | Example Stocks |
+|-----------|-----------------|-----------------|
+| **Conservative (LOW)** | Stable, dividend-paying, lower volatility | MSFT, JNJ, UNH, JPM |
+| **Moderate (MEDIUM)** | Balance of growth and stability | GOOGL, DIS, V, AMZN |
+| **Aggressive (HIGH)** | High growth potential, higher volatility | TSLA, NVDA, META, NFLX |
+
+**Scoring System:**
+- Matches user risk tolerance with stock risk profile
+- Conservative investors get +30 bonus for LOW-risk stocks
+- Aggressive investors get +30 bonus for HIGH-risk stocks
+- Moderate investors get balanced scoring across all risk levels
 
 ### Query Types Supported
 
@@ -192,6 +233,10 @@ python scripts/run_demo.py
 
 ## 🛠️ Tech Stack
 
+### Web & UI
+- **Streamlit 1.50.0** - Modern web UI for chatbot interface
+- **Plotly** - Interactive charts and visualizations
+
 ### Core Technologies
 - **Python 3.9+** - Programming language
 - **LangChain 0.3.28** - LLM orchestration & RAG framework
@@ -200,7 +245,8 @@ python scripts/run_demo.py
   - `transformers` - For LLM loading
   - `huggingface-hub` - Model management
 
-### Data & ML
+### Data & Financial APIs
+- **yfinance** - Real-time stock prices and financial data from Yahoo Finance
 - **pandas** - Data manipulation & analysis
 - **numpy** - Numerical computing
 - **scikit-learn** - ML utilities & risk calculations
@@ -213,6 +259,7 @@ python scripts/run_demo.py
 ### External APIs
 - **NewsAPI** - Real news data (newsapi-python 0.2.7)
 - **Financial Modeling Prep (FMP)** - Stock financial data
+- **yfinance** - Yahoo Finance data
 - **requests 2.32.5** - HTTP requests
 
 ### Utilities
@@ -236,20 +283,21 @@ llm_rag_finance/
 ├── src/                                # Main Python package
 │   ├── __init__.py
 │   ├── config.py                       # Environment configuration
-│   ├── data_fetch.py                   # FMP API helpers
+│   ├── data_fetch.py                   # FMP & yfinance API helpers
 │   ├── news_fetch.py                   # NewsAPI helpers
 │   ├── preprocess.py                   # Data cleaning & normalization
 │   ├── embeddings.py                   # Vector embeddings & Chroma DB
 │   ├── rag.py                          # RAG pipeline with LLM
 │   ├── financial_advisor.py            # Investment analysis engine
-│   └── stock_recommender.py            # Stock recommendation engine
+│   └── stock_recommender.py            # Stock recommendation engine (risk-aware)
 │
 ├── scripts/                            # Executable scripts
 │   ├── run_demo.py                     # Complete demo pipeline
-│   ├── chatbot.py                      # Interactive chatbot
+│   ├── chatbot.py                      # Interactive CLI chatbot
 │   └── recommend_demo.py               # Stock recommendation demo
 │
-├── start_chatbot.sh                    # Convenient launcher script
+├── streamlit_chatbot.py                # Modern Streamlit web interface ⭐ NEW
+├── run_chatbot.sh                      # Convenient launcher script (activates venv)
 │
 └── docs/chroma_rag/                    # Persistent vector database
 ```
@@ -279,7 +327,22 @@ CHROMA_PERSIST_DIR=docs/chroma/
 CHROMA_PERSIST_DIR_RAG=docs/chroma_rag/
 ```
 
-### Step 3: Run the Chatbot
+### Step 3a: Run the Streamlit Web Interface (Recommended) ⭐
+
+```bash
+./run_chatbot.sh
+```
+
+Then open browser to `http://localhost:8501`
+
+**Try these inputs:**
+```
+Budget: "I have $5000 to invest"
+Risk: "I'm conservative" / "I'm moderate" / "I'm aggressive"
+→ Get instant risk-aware stock recommendations!
+```
+
+### Step 3b: Run the CLI Chatbot
 
 ```bash
 python scripts/chatbot.py
@@ -447,16 +510,30 @@ This project teaches:
 ### Issue: Chroma DB not found
 **Solution:** First run creates the database. It will be at `docs/chroma_rag/`
 
+## 🚀 Recent Updates & Completed Features
+
+✅ **Streamlit Web Interface** - Beautiful, modern web UI with gradient design  
+✅ **Real-time Stock Prices** - yfinance API integration for live data  
+✅ **Risk-Aware Recommendations** - Different stocks for Conservative/Moderate/Aggressive investors  
+✅ **Risk Tolerance Detection** - Smart NLP to extract risk preference from user input  
+✅ **Instant Recommendations** - Generate top 5 stocks immediately after budget + risk provided  
+✅ **Conversation Flow** - Smart chatbot that asks for missing information  
+✅ **Beautiful UI** - Gradient header, message bubbles, user profile card  
+✅ **Session State Management** - Chat history and user profile tracking  
+✅ **Responsive Design** - Works on desktop and mobile browsers  
+
 ## 🚀 Future Enhancements
 
-- [ ] Real-time price alerts
-- [ ] Portfolio optimization
-- [ ] Technical analysis indicators
-- [ ] Web UI interface
-- [ ] Database for conversation history
-- [ ] Multiple portfolio tracking
-- [ ] Risk-adjusted recommendations
-- [ ] Machine learning model improvements
+- [ ] Portfolio tracking and optimization
+- [ ] Technical analysis indicators (RSI, MACD, Bollinger Bands)
+- [ ] Real-time price alerts and notifications
+- [ ] User authentication and profiles
+- [ ] Database for persistent chat history
+- [ ] Advanced risk metrics (Value at Risk, Sharpe Ratio)
+- [ ] Sector and industry filtering
+- [ ] More advanced ML models for prediction
+- [ ] Export analysis reports to PDF
+- [ ] Multi-portfolio management
 
 ## 📄 License
 
