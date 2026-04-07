@@ -9,3 +9,7 @@ sentence-transformers
 chromadb
 huggingface-hub
 python-dotenv
+yfinance
+streamlit
+plotly
+scipy

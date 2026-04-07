@@ -39,13 +39,15 @@ class StockRecommender:
         self.recommendations_cache = {}
     
     def get_stock_recommendations(self, investment_amount: float, 
-                                  num_recommendations: int = 5) -> Dict:
+                                  num_recommendations: int = 5,
+                                  risk_tolerance: str = 'MEDIUM') -> Dict:
         """
         Get top stock recommendations for the given investment amount.
         
         Args:
             investment_amount: Amount to invest
             num_recommendations: Number of stocks to recommend (default: 5)
+            risk_tolerance: Risk tolerance level - 'LOW', 'MEDIUM', or 'HIGH' (default: 'MEDIUM')
             
         Returns:
             Dictionary with recommended stocks and analysis
@@ -79,7 +81,8 @@ class StockRecommender:
                     recommendation, 
                     risk, 
                     sentiment, 
-                    metrics
+                    metrics,
+                    risk_tolerance  # Pass risk tolerance to scorer
                 )
                 
                 stock_data = {
@@ -117,6 +120,7 @@ class StockRecommender:
         
         return {
             'investment_amount': investment_amount,
+            'risk_tolerance': risk_tolerance,
             'timestamp': pd.Timestamp.now().isoformat(),
             'top_recommendations': top_recommendations,
             'strong_buys': strong_buys,
@@ -125,20 +129,23 @@ class StockRecommender:
             'all_analyses': analyses,
             'summary': self._generate_recommendation_summary(
                 top_recommendations,
-                investment_amount
+                investment_amount,
+                risk_tolerance
             )
         }
     
     def _calculate_investment_score(self, recommendation: str, risk: str, 
-                                   sentiment: str, metrics: Dict) -> float:
+                                   sentiment: str, metrics: Dict, 
+                                   user_risk_tolerance: str = 'MEDIUM') -> float:
         """
-        Calculate an investment score for ranking.
+        Calculate an investment score for ranking based on user's risk tolerance.
         
         Args:
             recommendation: Recommendation text
-            risk: Risk level
+            risk: Stock's risk level
             sentiment: Market sentiment
             metrics: Financial metrics
+            user_risk_tolerance: User's risk tolerance - 'LOW', 'MEDIUM', or 'HIGH'
             
         Returns:
             Score between 0-100
@@ -155,13 +162,37 @@ class StockRecommender:
         else:
             score += 0
         
-        # Risk score (0-30 points) - Lower risk is better
-        if risk == 'LOW':
-            score += 30
-        elif risk == 'MEDIUM':
-            score += 15
-        else:
-            score += 0
+        # Risk matching score (0-30 points) - Match user preference to stock risk
+        # Conservative investors prefer LOW risk stocks
+        # Moderate investors are OK with MEDIUM risk
+        # Aggressive investors prefer HIGH risk for growth
+        
+        if user_risk_tolerance == 'LOW':
+            # Conservative investor - penalize high-risk stocks
+            if risk == 'LOW':
+                score += 30  # Perfect match
+            elif risk == 'MEDIUM':
+                score += 15  # Acceptable
+            else:
+                score += 0   # Too risky
+                
+        elif user_risk_tolerance == 'HIGH':
+            # Aggressive investor - prefer growth/high-risk stocks
+            if risk == 'HIGH':
+                score += 30  # Perfect match for growth
+            elif risk == 'MEDIUM':
+                score += 15  # Acceptable
+            else:
+                score += 5   # Too conservative/stable
+                
+        else:  # MEDIUM
+            # Moderate investor - balanced approach
+            if risk == 'MEDIUM':
+                score += 30  # Perfect match
+            elif risk in ['LOW', 'HIGH']:
+                score += 15  # Acceptable on either side
+            else:
+                score += 10
         
         # Sentiment score (0-20 points)
         if sentiment == 'POSITIVE':
@@ -182,23 +213,33 @@ class StockRecommender:
         return min(score, 100)  # Cap at 100
     
     def _generate_recommendation_summary(self, top_stocks: List[Dict], 
-                                        investment_amount: float) -> str:
+                                        investment_amount: float,
+                                        risk_tolerance: str = 'MEDIUM') -> str:
         """
         Generate a summary of recommendations.
         
         Args:
             top_stocks: List of top recommended stocks
             investment_amount: Investment amount
+            risk_tolerance: User's risk tolerance level
             
         Returns:
             Formatted summary string
         """
+        # Map risk tolerance to display name
+        risk_names = {
+            'LOW': '🟢 Conservative',
+            'MEDIUM': '🟡 Moderate',
+            'HIGH': '🔴 Aggressive'
+        }
+        
         summary = f"""
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║                    TOP STOCK RECOMMENDATIONS                            ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
 💰 INVESTMENT AMOUNT: ${investment_amount:,.2f}
+⚠️  RISK TOLERANCE: {risk_names.get(risk_tolerance, risk_tolerance)}
 
 🏆 TOP {len(top_stocks)} RECOMMENDED STOCKS:
 {'─' * 76}

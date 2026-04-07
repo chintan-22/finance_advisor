@@ -1,6 +1,9 @@
 from typing import Optional
 from langchain.chains import RetrievalQA
-from langchain.llms import HuggingFacePipeline
+try:
+    from langchain_community.llms import HuggingFacePipeline
+except ImportError:
+    from langchain.llms import HuggingFacePipeline
 from langchain.llms.base import LLM
 from transformers import pipeline
 import torch
